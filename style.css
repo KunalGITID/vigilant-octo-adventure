@@ -1,125 +1,354 @@
-/* Reset and Base Styles */
+:root {
+    --bg-dark: #0f0f0f;
+    --card-dark: #1a1a1a;
+    --primary-orange: #ff7b00;
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --green-up: #00e676;
+    --red-penalty: #ff3b3b;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background-color: #0a0a0a; /* Deep, almost black background */
-    color: #00ffcc; /* Default terminal green/cyan */
-    font-family: 'Fira Code', monospace;
+    background-color: #000;
     display: flex;
     justify-content: center;
-    padding: 2rem;
-    overflow-x: hidden;
+    align-items: center;
+    min-height: 100vh;
+    color: var(--text-main);
 }
 
-.hidden {
-    display: none !important;
-}
-
-/* Terminal & Neon Effects */
-.terminal-text {
-    text-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
-}
-
-.neon-blue {
-    color: #00aaff;
-    text-shadow: 0 0 8px #00aaff;
-}
-
-.neon-green {
-    color: #39ff14;
-    text-shadow: 0 0 8px #39ff14;
-}
-
-.highlight {
-    color: #fff;
-    text-shadow: 0 0 10px #fff;
-}
-
-.border-neon {
-    border: 1px solid #00ffcc;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.2), inset 0 0 10px rgba(0, 255, 204, 0.1);
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Layout & Interactivity */
-#main-interface {
+/* Mobile App Container */
+#app-container {
     width: 100%;
-    max-width: 600px;
+    max-width: 400px;
+    height: 850px;
+    background-color: var(--bg-dark);
+    border-radius: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    box-shadow: 0 0 50px rgba(255, 123, 0, 0.1);
+    padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#app-container::-webkit-scrollbar {
+    display: none;
+}
+
+.top-header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+}
+
+.top-header h1 {
+    font-size: 2rem;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+/* Player Card Section */
+.player-card {
+    background-color: var(--card-dark);
+    border-radius: 24px;
+    margin: 0 1rem;
+    padding: 1.5rem;
+    border: 1px solid #333;
+}
+
+.card-header h2 {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tab {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    background: #2a2a2a;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.tab.active {
+    background: var(--text-main);
+    color: #000;
+}
+
+.level-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    position: relative;
+}
+
+.level-badge {
+    background-color: var(--primary-orange);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    width: 90px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: skewY(-5deg); /* Gives that edgy dynamic look */
+    box-shadow: 0 10px 20px rgba(255, 123, 0, 0.3);
+}
+
+.level-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.level-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.xp-info {
+    text-align: right;
+}
+
+.xp-info h3 {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.xp-info p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Segmented Progress Bar */
+.progress-container {
+    display: flex;
+    gap: 4px;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.progress-segment {
+    height: 12px;
+    flex: 1;
+    background-color: #333;
+    transform: skewX(-15deg);
+}
+
+.progress-segment.filled {
+    background-color: var(--primary-orange);
+}
+
+/* RPG Stats */
+.stats-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-h1, h2 {
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
 }
 
-.input-area {
+.stat-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #bbb;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-input[type="text"] {
-    flex-grow: 1;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: inherit;
-    font-size: 1rem;
-    outline: none;
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-button {
-    background: transparent;
-    border: none;
-    color: #00ffcc;
-    font-family: inherit;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
+.up-arrow {
+    color: var(--green-up);
+    font-size: 0.8rem;
 }
 
-button:hover {
-    color: #fff;
-    text-shadow: 0 0 10px #fff;
+/* Quests Section */
+.quests-section {
+    padding: 2rem 1rem;
 }
 
-/* Quest List */
-ul {
-    list-style-type: none;
-}
-
-li {
-    padding: 0.8rem;
-    border-left: 2px solid #00aaff;
-    margin-bottom: 0.5rem;
-    background: rgba(0, 170, 255, 0.05);
+.quests-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-    transition: background 0.2s;
 }
 
-li:hover {
-    background: rgba(0, 170, 255, 0.15);
+.nav-arrows {
+    background: #222;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
 }
 
-li.completed {
-    text-decoration: line-through;
-    color: #555;
-    border-left-color: #555;
-    text-shadow: none;
-}
-
-.xp-reward {
+.subtitle {
+    color: var(--text-muted);
     font-size: 0.8rem;
-    color: #00aaff;
+    margin-bottom: 1.5rem;
+}
+
+.quest-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.q-tab {
+    background: #222;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.q-tab.active {
+    background: var(--text-main);
+    color: #000;
+}
+
+.badge {
+    background: #444;
+    color: #fff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+}
+
+.q-tab.active .badge {
+    background: #ccc;
+    color: #000;
+}
+
+.add-btn {
+    background: transparent;
+    border: 2px solid #444;
+    color: #fff;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+/* Quest Cards */
+.quest-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.quest-card {
+    height: 140px;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.quest-card:active {
+    transform: scale(0.96);
+}
+
+.quest-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    /* The crucial gradient that makes text readable over images */
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
+    z-index: 1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-tag {
+    align-self: flex-start;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+}
+
+.tag-penalty { color: var(--red-penalty); }
+.tag-streak { color: var(--primary-orange); }
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--bg-dark);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #222;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.active-icon {
+    color: var(--text-main);
 }
