@@ -3,39 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM // Dashboard</title>
+    <title>System // Mobile</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="boot-screen" class="terminal-text">
-        <p id="boot-text"></p>
-    </div>
 
-    <div id="main-interface" class="hidden terminal-text">
-        <header>
-            <h1 class="neon-blue">[ STATUS WINDOW ]</h1>
-            <div class="stats-box border-neon">
-                <p>NAME: <span class="highlight">PLAYER_ONE</span></p>
-                <p>LEVEL: <span id="level-display" class="highlight">1</span></p>
-                <p>HP:  <span id="hp-bar" class="neon-green">[||||||||||]</span></p>
-                <p>XP:  <span id="xp-bar" class="neon-blue">[..........]</span> <span id="xp-text">0/100</span></p>
+<div id="app-container">
+    
+    <header class="top-header">
+        <h1>Level Up In<br>66 Days</h1>
+    </header>
+
+    <section class="player-card">
+        <div class="card-header">
+            <h2>Your Rating <i class="fa-solid fa-star"></i></h2>
+            <div class="tabs">
+                <span class="tab active">CURRENT RATING</span>
+                <span class="tab">POTENTIAL</span>
             </div>
-        </header>
+        </div>
 
-        <main>
-            <h2 class="neon-blue">[ DAILY QUESTS ]</h2>
-            <div class="input-area border-neon">
-                <span class="prompt">></span>
-                <input type="text" id="quest-input" placeholder="Enter new objective..." autocomplete="off">
-                <button id="add-btn">[ ADD ]</button>
+        <div class="level-info">
+            <div class="level-badge">
+                <span class="level-num" id="player-level">5</span>
+                <span class="level-text">LEVEL</span>
             </div>
-            
-            <ul id="quest-list">
-                </ul>
-        </main>
-    </div>
+            <div class="xp-info">
+                <h3 id="player-xp">5,450</h3>
+                <p>XP earned</p>
+            </div>
+        </div>
 
-    <script src="script.js"></script>
+        <div class="progress-container" id="progress-bar">
+            </div>
+
+        <div class="stats-list" id="stats-list">
+            </div>
+    </section>
+
+    <section class="quests-section">
+        <div class="quests-header">
+            <h2>Day 33/66</h2>
+            <div class="nav-arrows">
+                <i class="fa-solid fa-chevron-left"></i>
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </div>
+        <p class="subtitle">You're doing great. Keep going!</p>
+
+        <div class="quest-tabs">
+            <span class="q-tab active">To-dos <span class="badge">2</span></span>
+            <span class="q-tab">Done <span class="badge">0</span></span>
+            <span class="q-tab">Skipped <span class="badge">0</span></span>
+            <button class="add-btn"><i class="fa-solid fa-plus"></i></button>
+        </div>
+
+        <div class="quest-list" id="quest-list">
+            </div>
+    </section>
+
+    <nav class="bottom-nav">
+        <i class="fa-solid fa-sun active-icon"></i>
+        <i class="fa-solid fa-chart-simple"></i>
+        <i class="fa-solid fa-shield-halved"></i>
+        <i class="fa-solid fa-user-group"></i>
+        <i class="fa-solid fa-border-all"></i>
+    </nav>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
