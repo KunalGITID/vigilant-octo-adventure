@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM // Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="boot-screen" class="terminal-text">
+        <p id="boot-text"></p>
+    </div>
+
+    <div id="main-interface" class="hidden terminal-text">
+        <header>
+            <h1 class="neon-blue">[ STATUS WINDOW ]</h1>
+            <div class="stats-box border-neon">
+                <p>NAME: <span class="highlight">PLAYER_ONE</span></p>
+                <p>LEVEL: <span id="level-display" class="highlight">1</span></p>
+                <p>HP:  <span id="hp-bar" class="neon-green">[||||||||||]</span></p>
+                <p>XP:  <span id="xp-bar" class="neon-blue">[..........]</span> <span id="xp-text">0/100</span></p>
+            </div>
+        </header>
+
+        <main>
+            <h2 class="neon-blue">[ DAILY QUESTS ]</h2>
+            <div class="input-area border-neon">
+                <span class="prompt">></span>
+                <input type="text" id="quest-input" placeholder="Enter new objective..." autocomplete="off">
+                <button id="add-btn">[ ADD ]</button>
+            </div>
+            
+            <ul id="quest-list">
+                </ul>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
