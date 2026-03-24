@@ -1,79 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System // Mobile</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE SYSTEM — Daily Quest Tracker</title>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FONTS
+       VT323 — pixel/terminal aesthetic (headings, system text)
+       Fira Code — modern monospace (body, stats, inputs)
+       ═══════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=VT323&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div id="app-container">
-    
-    <header class="top-header">
-        <h1>Level Up In<br>66 Days</h1>
+  <!-- ═══════════════════════════════════════════════════════════
+       BOOT SEQUENCE OVERLAY
+       Covers the entire viewport on first load.
+       JS types out terminal lines, then fades away to reveal app.
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="boot-overlay" class="boot-overlay">
+    <div class="boot-content">
+      <pre id="boot-log" class="boot-log"></pre>
+      <span id="boot-cursor" class="boot-cursor">█</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEVEL UP MODAL
+       Hidden by default. Triggered when XP >= 100.
+       Shows level-up message + stat point allocation UI.
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="levelup-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <p class="modal-flash" id="modal-title">[ LEVEL UP ]</p>
+      <p class="modal-subtitle">You have ascended. Allocate your stat points.</p>
+      <p class="modal-points">Points remaining: <span id="modal-points-left">3</span></p>
+
+      <div class="modal-stats">
+        <!-- Each stat row: label, current value, +1 button -->
+        <div class="modal-stat-row">
+          <span class="stat-label">STR</span>
+          <span class="stat-val" id="modal-str">0</span>
+          <button class="stat-btn" data-stat="str">+1</button>
+        </div>
+        <div class="modal-stat-row">
+          <span class="stat-label">INT</span>
+          <span class="stat-val" id="modal-int">0</span>
+          <button class="stat-btn" data-stat="int">+1</button>
+        </div>
+        <div class="modal-stat-row">
+          <span class="stat-label">AGI</span>
+          <span class="stat-val" id="modal-agi">0</span>
+          <button class="stat-btn" data-stat="agi">+1</button>
+        </div>
+      </div>
+
+      <button id="modal-confirm" class="modal-confirm-btn" disabled>
+        [ CONFIRM ]
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN APPLICATION SHELL
+       Hidden until boot sequence completes.
+       ═══════════════════════════════════════════════════════════ -->
+  <div id="app" class="app hidden">
+
+    <!-- ─── HEADER / TITLE BAR ─── -->
+    <header class="header">
+      <h1 class="title">THE SYSTEM</h1>
+      <p class="tagline">// daily quest interface v1.0</p>
     </header>
 
-    <section class="player-card">
-        <div class="card-header">
-            <h2>Your Rating <i class="fa-solid fa-star"></i></h2>
-            <div class="tabs">
-                <span class="tab active">CURRENT RATING</span>
-                <span class="tab">POTENTIAL</span>
-            </div>
+    <!-- ─── PLAYER HUD (Heads-Up Display) ─── -->
+    <section class="hud">
+
+      <!-- Player identity + level -->
+      <div class="hud-identity">
+        <span class="hud-rank" id="hud-rank">E</span>
+        <div>
+          <p class="hud-name" id="hud-name">PLAYER</p>
+          <p class="hud-level">LVL <span id="hud-level">1</span></p>
         </div>
+      </div>
 
-        <div class="level-info">
-            <div class="level-badge">
-                <span class="level-num" id="player-level">5</span>
-                <span class="level-text">LEVEL</span>
-            </div>
-            <div class="xp-info">
-                <h3 id="player-xp">5,450</h3>
-                <p>XP earned</p>
-            </div>
-        </div>
+      <!-- HP Bar (ASCII style) -->
+      <div class="bar-group">
+        <span class="bar-label">HP</span>
+        <span class="bar-track hp-track" id="hp-bar">[||||||||||]</span>
+        <span class="bar-value" id="hp-value">100/100</span>
+      </div>
 
-        <div class="progress-container" id="progress-bar">
-            </div>
+      <!-- XP Bar (ASCII style) -->
+      <div class="bar-group">
+        <span class="bar-label">XP</span>
+        <span class="bar-track xp-track" id="xp-bar">[..........]</span>
+        <span class="bar-value" id="xp-value">0/100</span>
+      </div>
 
-        <div class="stats-list" id="stats-list">
-            </div>
+      <!-- Stat summary row -->
+      <div class="stats-row">
+        <span class="stat-chip">STR <span id="stat-str">0</span></span>
+        <span class="stat-chip">INT <span id="stat-int">0</span></span>
+        <span class="stat-chip">AGI <span id="stat-agi">0</span></span>
+      </div>
     </section>
 
+    <!-- ─── QUEST INPUT ─── -->
+    <section class="quest-input-section">
+      <div class="quest-input-row">
+        <span class="prompt-symbol">&gt;</span>
+        <input
+          type="text"
+          id="quest-input"
+          class="quest-input"
+          placeholder="Enter new quest..."
+          maxlength="80"
+          autocomplete="off"
+        />
+        <button id="quest-add-btn" class="quest-add-btn">[ ADD ]</button>
+      </div>
+    </section>
+
+    <!-- ─── ACTIVE QUESTS LIST ─── -->
     <section class="quests-section">
-        <div class="quests-header">
-            <h2>Day 33/66</h2>
-            <div class="nav-arrows">
-                <i class="fa-solid fa-chevron-left"></i>
-                <i class="fa-solid fa-chevron-right"></i>
-            </div>
-        </div>
-        <p class="subtitle">You're doing great. Keep going!</p>
-
-        <div class="quest-tabs">
-            <span class="q-tab active">To-dos <span class="badge">2</span></span>
-            <span class="q-tab">Done <span class="badge">0</span></span>
-            <span class="q-tab">Skipped <span class="badge">0</span></span>
-            <button class="add-btn"><i class="fa-solid fa-plus"></i></button>
-        </div>
-
-        <div class="quest-list" id="quest-list">
-            </div>
+      <h2 class="section-heading">— DAILY QUESTS —</h2>
+      <ul id="quest-list" class="quest-list">
+        <!-- Quest items rendered by JS -->
+      </ul>
+      <p id="quest-empty" class="quest-empty">No active quests. Add one above.</p>
     </section>
 
-    <nav class="bottom-nav">
-        <i class="fa-solid fa-sun active-icon"></i>
-        <i class="fa-solid fa-chart-simple"></i>
-        <i class="fa-solid fa-shield-halved"></i>
-        <i class="fa-solid fa-user-group"></i>
-        <i class="fa-solid fa-border-all"></i>
-    </nav>
+    <!-- ─── PENALTY / MISSED TASK BUTTON ─── -->
+    <section class="penalty-section">
+      <button id="miss-btn" class="miss-btn">
+        [ SIMULATE MISSED TASK ]
+      </button>
+      <p class="penalty-note">
+        // triggers a temporary aesthetic debuff &amp; small HP loss
+      </p>
+    </section>
 
-</div>
+    <!-- ─── FOOTER ─── -->
+    <footer class="footer">
+      <p>system.log // built with vanilla js &amp; stubbornness</p>
+    </footer>
+  </div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
