@@ -1,354 +1,705 @@
+/* ═══════════════════════════════════════════════════════════════
+   THE SYSTEM — STYLE SHEET
+   Neon terminal aesthetic. Dark background, glowing accents.
+   All colors defined as CSS variables for easy theming.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── CSS VARIABLES (Theme Tokens) ─── */
 :root {
-    --bg-dark: #0f0f0f;
-    --card-dark: #1a1a1a;
-    --primary-orange: #ff7b00;
-    --text-main: #ffffff;
-    --text-muted: #888888;
-    --green-up: #00e676;
-    --red-penalty: #ff3b3b;
+  /* Background shades */
+  --bg-deepest:    #050505;
+  --bg-dark:       #0a0a0a;
+  --bg-panel:      #0d0d0d;
+  --bg-surface:    #111111;
+  --bg-hover:      #1a1a1a;
+
+  /* Primary neon accent — electric cyan/blue */
+  --neon:          #00e5ff;
+  --neon-dim:      #00e5ff99;
+  --neon-glow:     0 0 6px #00e5ff88, 0 0 20px #00e5ff44, 0 0 40px #00e5ff22;
+  --neon-glow-sm:  0 0 4px #00e5ff66, 0 0 12px #00e5ff33;
+  --neon-glow-lg:  0 0 10px #00e5ffaa, 0 0 30px #00e5ff66, 0 0 60px #00e5ff33;
+
+  /* Secondary accent — XP / success green */
+  --xp-green:      #39ff14;
+  --xp-glow:       0 0 6px #39ff1488, 0 0 20px #39ff1444;
+
+  /* Warning / penalty — red */
+  --warn-red:      #ff1744;
+  --warn-glow:     0 0 6px #ff174488, 0 0 20px #ff174444;
+
+  /* HP bar color */
+  --hp-color:      #ff4081;
+  --hp-glow:       0 0 6px #ff408188, 0 0 16px #ff408144;
+
+  /* Gold for level-up */
+  --gold:          #ffd600;
+  --gold-glow:     0 0 8px #ffd60088, 0 0 24px #ffd60044, 0 0 48px #ffd60022;
+
+  /* Text */
+  --text-primary:  #d4d4d4;
+  --text-dim:      #666666;
+  --text-muted:    #444444;
+
+  /* Fonts */
+  --font-display:  'VT323', monospace;
+  --font-body:     'Fira Code', 'Courier New', monospace;
+
+  /* Sizing */
+  --max-width:     640px;
+  --radius:        2px;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
+/* ─── RESET & BASE ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: var(--text-main);
+  font-family: var(--font-body);
+  background: var(--bg-deepest);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  /* Subtle scanline effect via repeating gradient */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 229, 255, 0.015) 2px,
+      rgba(0, 229, 255, 0.015) 4px
+    );
 }
 
-/* Mobile App Container */
-#app-container {
-    width: 100%;
-    max-width: 400px;
-    height: 850px;
-    background-color: var(--bg-dark);
-    border-radius: 40px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-    box-shadow: 0 0 50px rgba(255, 123, 0, 0.1);
-    padding-bottom: 80px; /* Space for bottom nav */
+/* ═══════════════════════════════════════════════════════════════
+   BOOT SEQUENCE OVERLAY
+   Full-screen dark overlay with typed terminal text.
+   ═══════════════════════════════════════════════════════════════ */
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-deepest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-#app-container::-webkit-scrollbar {
-    display: none;
+/* When boot is done, we add this class */
+.boot-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
 }
 
-.top-header {
-    text-align: center;
-    padding: 2rem 1rem 1rem;
+.boot-content {
+  max-width: 500px;
+  width: 90%;
 }
 
-.top-header h1 {
-    font-size: 2rem;
-    line-height: 1.1;
-    font-weight: 800;
+.boot-log {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  line-height: 1.8;
+  white-space: pre-wrap;
 }
 
-/* Player Card Section */
-.player-card {
-    background-color: var(--card-dark);
-    border-radius: 24px;
-    margin: 0 1rem;
-    padding: 1.5rem;
-    border: 1px solid #333;
+/* Blinking cursor after boot text */
+.boot-cursor {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  animation: blink 0.6s step-end infinite;
 }
 
-.card-header h2 {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.5rem;
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
-.tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+/* ═══════════════════════════════════════════════════════════════
+   MAIN APP CONTAINER
+   ═══════════════════════════════════════════════════════════════ */
+.app {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  transition: opacity 0.5s ease;
 }
 
-.tab {
-    font-size: 0.7rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    background: #2a2a2a;
-    color: var(--text-muted);
-    font-weight: 600;
+.app.hidden {
+  display: none;
 }
 
-.tab.active {
-    background: var(--text-main);
-    color: #000;
+/* ─── HEADER ─── */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--text-muted);
 }
 
-.level-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-    position: relative;
+.title {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-lg);
+  text-transform: uppercase;
 }
 
-.level-badge {
-    background-color: var(--primary-orange);
-    color: #fff;
-    padding: 1rem;
-    border-radius: 12px;
-    width: 90px;
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transform: skewY(-5deg); /* Gives that edgy dynamic look */
-    box-shadow: 0 10px 20px rgba(255, 123, 0, 0.3);
+.tagline {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
 }
 
-.level-num {
-    font-size: 2.5rem;
-    font-weight: 800;
-    line-height: 1;
+/* ═══════════════════════════════════════════════════════════════
+   HUD — PLAYER STATUS PANEL
+   ═══════════════════════════════════════════════════════════════ */
+.hud {
+  background: var(--bg-panel);
+  border: 1px solid #1a1a1a;
+  border-left: 3px solid var(--neon);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), var(--neon-glow-sm);
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  /* For the debuff flicker animation */
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.level-text {
-    font-size: 0.7rem;
-    font-weight: 600;
+/* Debuff state — red warning glow */
+.hud.debuff {
+  border-left-color: var(--warn-red);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), var(--warn-glow);
+  animation: flicker 0.15s ease-in-out 6;
 }
 
-.xp-info {
-    text-align: right;
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.6; }
 }
 
-.xp-info h3 {
-    font-size: 2rem;
-    font-weight: 800;
+/* Player identity: rank badge + name/level */
+.hud-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.xp-info p {
-    color: var(--text-muted);
-    font-size: 0.8rem;
+.hud-rank {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--gold);
+  text-shadow: var(--gold-glow);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gold);
+  flex-shrink: 0;
 }
 
-/* Segmented Progress Bar */
-.progress-container {
-    display: flex;
-    gap: 4px;
-    margin-top: 1.5rem;
-    margin-bottom: 2rem;
+.hud-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--text-primary);
+  letter-spacing: 0.15em;
 }
 
-.progress-segment {
-    height: 12px;
-    flex: 1;
-    background-color: #333;
-    transform: skewX(-15deg);
+.hud-level {
+  font-size: 0.75rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  letter-spacing: 0.1em;
 }
 
-.progress-segment.filled {
-    background-color: var(--primary-orange);
+/* ─── ASCII BARS (HP / XP) ─── */
+.bar-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
 }
 
-/* RPG Stats */
-.stats-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.bar-label {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
-.stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #333;
-    padding-bottom: 0.5rem;
+.bar-track {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.stat-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #bbb;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+/* HP bar text color */
+.hp-track {
+  color: var(--hp-color);
+  text-shadow: var(--hp-glow);
 }
 
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+/* XP bar text color */
+.xp-track {
+  color: var(--xp-green);
+  text-shadow: var(--xp-glow);
 }
 
-.up-arrow {
-    color: var(--green-up);
-    font-size: 0.8rem;
+.bar-value {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  min-width: 56px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
-/* Quests Section */
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: flex;
+  gap: 16px;
+  padding-top: 6px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.stat-chip {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.stat-chip span {
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUEST INPUT AREA
+   ═══════════════════════════════════════════════════════════════ */
+.quest-input-section {
+  margin-bottom: 28px;
+}
+
+.quest-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #222;
+  background: var(--bg-surface);
+  padding: 8px 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.quest-input-row:focus-within {
+  border-color: var(--neon-dim);
+  box-shadow: var(--neon-glow-sm);
+}
+
+.prompt-symbol {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.quest-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  caret-color: var(--neon);
+}
+
+.quest-input::placeholder {
+  color: var(--text-muted);
+}
+
+.quest-add-btn {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  background: transparent;
+  border: 1px solid var(--neon-dim);
+  padding: 4px 14px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: background 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.quest-add-btn:hover {
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: var(--neon-glow-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUEST LIST
+   ═══════════════════════════════════════════════════════════════ */
 .quests-section {
-    padding: 2rem 1rem;
+  margin-bottom: 32px;
 }
 
-.quests-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.section-heading {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  text-align: center;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
 }
 
-.nav-arrows {
-    background: #222;
-    padding: 0.3rem 0.6rem;
-    border-radius: 8px;
-    display: flex;
-    gap: 1rem;
-}
-
-.subtitle {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    margin-bottom: 1.5rem;
-}
-
-.quest-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    align-items: center;
-}
-
-.q-tab {
-    background: #222;
-    padding: 0.5rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.q-tab.active {
-    background: var(--text-main);
-    color: #000;
-}
-
-.badge {
-    background: #444;
-    color: #fff;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-}
-
-.q-tab.active .badge {
-    background: #ccc;
-    color: #000;
-}
-
-.add-btn {
-    background: transparent;
-    border: 2px solid #444;
-    color: #fff;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
-    margin-left: auto;
-    cursor: pointer;
-}
-
-/* Quest Cards */
 .quest-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.quest-card {
-    height: 140px;
-    border-radius: 16px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
+.quest-empty {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 20px 0;
 }
 
-.quest-card:active {
-    transform: scale(0.96);
+/* Individual quest item */
+.quest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border-left: 2px solid var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
+  overflow: hidden;
 }
 
-.quest-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    /* The crucial gradient that makes text readable over images */
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
-    z-index: 1;
+.quest-item:hover {
+  background: var(--bg-hover);
+  border-left-color: var(--neon-dim);
 }
 
-.card-content {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+/* The checkbox-like marker */
+.quest-marker {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
 }
 
-.card-tag {
-    align-self: flex-start;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
+.quest-text {
+  flex: 1;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  transition: color 0.3s;
 }
 
-.tag-penalty { color: var(--red-penalty); }
-.tag-streak { color: var(--primary-orange); }
-
-.card-title {
-    font-size: 1.2rem;
-    font-weight: 800;
+.quest-xp {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--xp-green);
+  text-shadow: var(--xp-glow);
+  flex-shrink: 0;
+  opacity: 0.7;
 }
 
-.card-subtitle {
-    font-size: 0.8rem;
-    color: #ccc;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+/* Delete button for quests */
+.quest-delete {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  flex-shrink: 0;
+  transition: color 0.2s;
 }
 
-/* Bottom Navigation */
-.bottom-nav {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 70px;
-    background: var(--bg-dark);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border-top: 1px solid #222;
-    font-size: 1.2rem;
-    color: #666;
+.quest-delete:hover {
+  color: var(--warn-red);
+  text-shadow: var(--warn-glow);
 }
 
-.active-icon {
-    color: var(--text-main);
+/* ─── COMPLETED QUEST STATE ─── */
+.quest-item.completed {
+  border-left-color: var(--xp-green);
+  opacity: 0.45;
+}
+
+.quest-item.completed .quest-marker {
+  color: var(--xp-green);
+  text-shadow: var(--xp-glow);
+}
+
+.quest-item.completed .quest-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.quest-item.completed .quest-xp {
+  opacity: 0.3;
+}
+
+/* ─── XP FLASH EFFECT (plays on completion) ─── */
+.quest-item.flash::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.15), transparent);
+  animation: xp-flash 0.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes xp-flash {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PENALTY / MISSED TASK SECTION
+   ═══════════════════════════════════════════════════════════════ */
+.penalty-section {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.miss-btn {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--warn-red);
+  text-shadow: var(--warn-glow);
+  background: transparent;
+  border: 1px solid rgba(255, 23, 68, 0.3);
+  padding: 8px 20px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.miss-btn:hover {
+  background: rgba(255, 23, 68, 0.06);
+  box-shadow: var(--warn-glow);
+}
+
+.penalty-note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LEVEL UP MODAL
+   ═══════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-box {
+  background: var(--bg-panel);
+  border: 1px solid var(--gold);
+  box-shadow: var(--gold-glow), inset 0 0 40px rgba(0, 0, 0, 0.6);
+  padding: 32px 36px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+}
+
+.modal-flash {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  color: var(--gold);
+  text-shadow: var(--gold-glow);
+  letter-spacing: 0.2em;
+  animation: pulse-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  from { text-shadow: var(--gold-glow); }
+  to   { text-shadow: 0 0 14px #ffd600cc, 0 0 40px #ffd60088, 0 0 70px #ffd60044; }
+}
+
+.modal-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 12px 0 20px;
+}
+
+.modal-points {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  margin-bottom: 18px;
+}
+
+.modal-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.modal-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.stat-label {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-dim);
+  width: 40px;
+  text-align: right;
+  letter-spacing: 0.1em;
+}
+
+.stat-val {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  width: 30px;
+  text-align: center;
+}
+
+.stat-btn {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--neon);
+  text-shadow: var(--neon-glow-sm);
+  background: transparent;
+  border: 1px solid var(--neon-dim);
+  width: 36px;
+  height: 30px;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.stat-btn:hover {
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: var(--neon-glow-sm);
+}
+
+.stat-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.modal-confirm-btn {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--gold);
+  text-shadow: var(--gold-glow);
+  background: transparent;
+  border: 1px solid var(--gold);
+  padding: 8px 28px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.modal-confirm-btn:hover:not(:disabled) {
+  background: rgba(255, 214, 0, 0.08);
+  box-shadow: var(--gold-glow);
+}
+
+.modal-confirm-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.footer {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.footer p {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY — HIDDEN
+   ═══════════════════════════════════════════════════════════════ */
+.hidden {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — small screens
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .title {
+    font-size: 2.2rem;
+    letter-spacing: 0.15em;
+  }
+  .hud {
+    padding: 16px;
+  }
+  .bar-group {
+    font-size: 0.72rem;
+  }
+  .bar-track {
+    font-size: 0.75rem;
+  }
+  .modal-box {
+    padding: 24px 20px;
+  }
 }
